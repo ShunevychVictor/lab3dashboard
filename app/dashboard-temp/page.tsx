@@ -27,8 +27,8 @@ export default function DashboardTempPage() {
         if (!res.ok) throw new Error("Error fetching data");
         const data = await res.json();
 
-        const formatted = data.map((item: any) => ({
-          time: new Date(item.timestamp).toLocaleTimeString("uk-UA", {
+        const formatted = data.map((item: Reading) => ({
+          time: new Date(item.time).toLocaleTimeString("uk-UA", {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
