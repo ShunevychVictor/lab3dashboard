@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -15,17 +16,31 @@ interface Reading {
   value: number;
 }
 
-export default function DashboardHumPage() {
+export default function DashboardHumidityPage() {
   const [readings, setReadings] = useState<Reading[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
+    if (!apiUrl) {
+      setError("API URL не визначено. Перевір .env.local");
+      setLoading(false);
+      return;
+    }
+
     async function fetchData() {
+      setLoading(true);
+      setError(null);
       try {
         const res = await fetch(`${apiUrl}/humidity-sensors`);
-        if (!res.ok) throw new Error("Error fetching data");
+        if (!res.ok) throw new Error(`HTTP помилка: ${res.status}`);
         const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error("API повернув невірний формат даних");
+        }
 
         const formatted = data.map((item: Reading) => ({
           time: new Date(item.time).toLocaleTimeString("uk-UA", {
@@ -37,8 +52,10 @@ export default function DashboardHumPage() {
         }));
 
         setReadings(formatted);
-      } catch (error) {
-        console.error("Fetching data:", error);
+      } catch (err) {
+        if (err instanceof Error) setError(err.message);
+        else setError("Невідома помилка при отриманні даних");
+        console.error("Fetching data error:", err);
       } finally {
         setLoading(false);
       }
@@ -46,10 +63,12 @@ export default function DashboardHumPage() {
 
     fetchData();
     const interval = setInterval(fetchData, 10000);
+
     return () => clearInterval(interval);
   }, [apiUrl]);
 
   if (loading) return <p>Завантаження даних...</p>;
+  if (error) return <p className="text-red-500">Помилка: {error}</p>;
 
   return (
     <div className="w-full h-96">
@@ -59,7 +78,7 @@ export default function DashboardHumPage() {
           <XAxis dataKey="time" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" />
         </LineChart>
       </ResponsiveContainer>
     </div>
