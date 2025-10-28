@@ -23,7 +23,7 @@ export default function DashboardHumPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(`${apiUrl}/humidity-sensor`);
+        const res = await fetch(`${apiUrl}/humidity-sensors`);
         if (!res.ok) throw new Error("Error fetching data");
         const data = await res.json();
 
