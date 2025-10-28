@@ -21,7 +21,9 @@ export default function DashboardTempPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrlRaw = process.env.NEXT_PUBLIC_API_URL;
+  // Remove trailing slash if present to avoid double-slash in requests
+  const apiUrl = apiUrlRaw ? apiUrlRaw.replace(/\/+$/, "") : "";
 
   useEffect(() => {
     if (!apiUrl) {
