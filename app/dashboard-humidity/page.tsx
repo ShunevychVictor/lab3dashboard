@@ -21,11 +21,9 @@ export default function DashboardHumidityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-// 1. Використовуємо оператор нульового злиття (??) для значення за замовчуванням (пустого рядка).
-  const apiUrlRaw = process.env.NEXT_PUBLIC_API_URL ?? "";
- 
-  // 2. Видаляємо кінцеві слеші.
-  const apiUrl = apiUrlRaw.replace(/\/+$/, "");
+  const apiUrlRaw = process.env.NEXT_PUBLIC_API_URL;
+  // Remove trailing slash if present to avoid double-slash in requests
+  const apiUrl = apiUrlRaw ? apiUrlRaw.replace(/\/+$/, "") : "";
 
   useEffect(() => {
     if (!apiUrl) {
